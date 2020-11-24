@@ -1,10 +1,42 @@
-<html>
-   <head>
-      <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-   </head>
-   <body>
-      <h1>
-         hello
-      </h1>
-   </body>
-</html>
+// npm install xmlhttprequest
+// npm install xlsx
+// time unit
+// 1min = 60sec
+// 1hour = 60min = 3600sec
+// 1d = 24hour = 86400sec
+// 여기서 시간은 로컬시간을 의미
+let tickers = {
+KOSPI: 37426, //코스피지수
+DJI: 169, //다우지수
+DJI_CFD: 8873, //다우 선물
+SNP500: 166, //S&P 500 지수
+SNP500_CFD: 8839 //S&P 500 선물
+}
+let timeScale = 30 //30분봉 5, 10, 30, 60 등등 타임스케일 적용
+let tickerSel = tickers.KOSPI; //ticker 선택
+let startDate = (+new Date('2020.07.01 00:00')/1000).toFixed(0); //날짜 형식을 UNIX 형식으로 변경
+let endDate = (+new Date('2020.07.02 00:00')/1000).toFixed(0); //UNIX 시간을 사용자가 입력하기 어렵기 때문
+let requestUrl = 'https://tvc4.forexpros.com/ccb6e54a79f21bee67e783bc0e410e78/1599318253/18/18/88/history?' +
+'symbol=' + tickerSel +
+'&resolution=' + timeScale +
+'&from=' + startDate +
+'&to=' + endDate;
+let XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+let rquest = new XMLHttpRequest();
+rquest.open('GET', requestUrl, false);
+rquest.responseType = 'json';
+rquest.send();
+let strBody = rquest.responseText;
+let parsedBody = JSON.parse(strBody);
+let ar_t = new Array(parsedBody.t); //타임스탬프
+let ar_o = new Array(parsedBody.o); //시가
+let ar_c = new Array(parsedBody.c); //종가
+// UNIX 타임스탬프를 UTC 표기법으로 일괄변경
+let ar_t_UTC = ar_t[0].map((t) => new Date(t * 1000));
+let xlApp = require('xlsx');
+let wb = xlApp.utils.book_new(); //새 워크북 생성
+wb.SheetNames.push("test"); //'test' 워크시트 생성
+let ws = xlApp.utils.aoa_to_sheet([ar_t_UTC]); //워크시트에 타임스탬프 최초 출력
+xlApp.utils.sheet_add_aoa(ws, ar_c, {origin: -1}); //최초 출력 이후 이어서 출력(여기서는 종가만)
+wb.Sheets['test'] = ws;
+let wbout = xlApp.writeFile(wb, './invest.xlsx'); //엑셀파일로 출력
