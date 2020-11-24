@@ -35,3 +35,36 @@ Your Pages site will use the layout and styles from the Jekyll theme you have se
 ### Support or Contact
 
 Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+
+
+```html
+<a href="https://www.google.co.kr/" target="_blank">GOOGLE</a>
+```
+
+```css
+.list > li {
+  position: absolute;
+  top: 40px;
+}
+```
+
+```javascript
+function func() {
+  var a = 'AAA';
+  return a;
+}
+```
+
+```bash
+$ vim ./~zshrc
+```
+
+```python
+s = "Python syntax highlighting"
+print s
+```
+
+```
+No language indicated, so no syntax highlighting. 
+But let's throw in a tag.
+```
